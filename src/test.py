@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 R = 100
 pscore = 0
 nscore = 0
-loc = '/home/mohit/Documents/nca/wine.data'
+loc = '../data/wine.data'
 
 data,labs = utils.read_data(loc,'csv')
 data = data - np.mean(data,axis=0)
