@@ -5,7 +5,7 @@ from sklearn import neighbors,preprocessing
 from sklearn.decomposition import pca
 import matplotlib.pyplot as plt
 
-R = 100
+R = 1
 trn_ratio = 50.
 pscore = 0
 nscore = 0
@@ -26,8 +26,9 @@ for r in range(R):
     tstlabs = np.take(labs,tstdx)
     
     D = np.shape(data)[1]
-    model = nca.NCA(D,2,maxiter=10,lamda=0.002,batchsize=50)
+    model = nca.NCA(D,2,maxiter=5,lamda=0.002,batchsize=89)
     model.fit(trndata,trnlabs)
+    costs = model.get_costs()
     Atrndata = model.transform(trndata)
     Atstdata = model.transform(tstdata)
     

@@ -10,7 +10,7 @@ class NCA():
         self.D = D
         self.d = d
         self.lamda = lamda
-        self.A = np.random.randn(D,d)
+        self.A = 0.01*np.random.randn(D,d)
         self.eps = np.finfo(np.float).eps
         self.maxiter = maxiter        
         self.batchsize = batchsize
@@ -37,8 +37,8 @@ class NCA():
     def f_df(self,A,x,y):                
         Ax = self.project(x,A)
         Pij,Pi = self.calc_softmax(Ax,y)
-        f = -np.sum(Pi)
-        f = f + self.lamda*(np.sum(A)**2);
+        f = np.sum(Pi)
+        f = f - self.lamda*(np.sum(A)**2)/(self.D*self.d);
         
         N = len(Pij)
         df1 = np.zeros(np.shape(A))
@@ -55,9 +55,9 @@ class NCA():
             p = np.take(Pij[i,:],dx).reshape(-1,1)
             tmp = np.dot((p*xij).T,xij)
             df2 += np.dot(tmp,A)
-        df = (df1 - df2)/self.batchsize
-        df = df - self.lamda*A;
-        return f,df
+        df = (df1 - df2)
+        df = df - self.lamda*A/(self.D*self.d);
+        return -f,-df
                 
     def fit(self,x,y):
         numbatches = np.ceil(len(x)/self.batchsize)
