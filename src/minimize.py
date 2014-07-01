@@ -102,7 +102,7 @@ def minimize(X, f, args, maxnumlinesearch=None, maxnumfuneval=None, red=1.0, ver
             if f3 < F0:
                 X0 = X+x3*s; F0 = f3; dF0 = df3   # keep best values
             d3 = dot(df3.T,s)                                         # new slope
-            if (d3 > SIG*d0).any() or (f3 > f0+x3*RHO*d0).any() or M == 0:  
+            if (d3 > SIG*d0) or (f3 > f0+x3*RHO*d0) or M == 0:  
                                                    # are we done extrapolating?
                 break
             x1 = x2; f1 = f2; d1 = d2                 # move point 2 to point 1
@@ -123,7 +123,7 @@ def minimize(X, f, args, maxnumlinesearch=None, maxnumfuneval=None, red=1.0, ver
                 x3 = x2+INT*(x2-x1)
             x3 = real(x3)
 
-        while ((abs(d3) > -SIG*d0).any() or (f3 > f0+x3*RHO*d0)).any() and M > 0:  
+        while ((abs(d3) > -SIG*d0) or (f3 > f0+x3*RHO*d0)) and M > 0:  
                                                            # keep interpolating
             if (d3 > 0) or (f3 > f0+x3*RHO*d0):            # choose subinterval
                 x4 = x3; f4 = f3; d4 = d3             # move point 3 to point 4
@@ -150,7 +150,7 @@ def minimize(X, f, args, maxnumlinesearch=None, maxnumfuneval=None, red=1.0, ver
             M = M - 1; i = i + (length<0)                      # count epochs?!
             d3 = dot(df3.T,s)                                         # new slope
 
-        if (abs(d3) < -SIG*d0).any() and (f3 < f0+x3*RHO*d0).any():  # if line search succeeded
+        if (abs(d3) < -SIG*d0) and (f3 < f0+x3*RHO*d0):  # if line search succeeded
             X = X+x3*s; f0 = f3; fX.append(f0)               # update variables
             if verbose: print '    %s %6i;  Value %4.6e\r' % (S, i, f0)
             s = (dot(df3.T,df3)-dot(df0.T,df3))/dot(df0.T,df0)*s - df3
@@ -164,9 +164,10 @@ def minimize(X, f, args, maxnumlinesearch=None, maxnumfuneval=None, red=1.0, ver
         else:
             X = X0; f0 = F0; df0 = dF0              # restore best point so far
             if ls_failed or (i>abs(length)):# line search failed twice in a row
+                print "Failed Twice"                
                 break                    # or we ran out of time, so we give up
             s = -df0; d0 = -dot(s.T,s)                             # try steepest
             x3 = 1/(1-d0)                     
             ls_failed = 1                             # this line search failed
-    #if verbose: print
+    if verbose: print ls_failed
     return X, fX, i
